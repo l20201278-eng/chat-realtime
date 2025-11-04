@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chat en Tiempo Real con Socket.IO</title>
+    <style>
+        body { font-family: sans-serif; margin: 20px; background-color: #f4f4f9; }
+        #chat-container { max-width: 600px; margin: 0 auto; background: #fff; padding: 20px; border-radius: 8px; box-shadow: 0 0 10px rgba(0,0,0,0.1); }
+        #messages { border: 1px solid #ccc; height: 300px; overflow-y: scroll; padding: 10px; margin-bottom: 10px; border-radius: 4px; }
+        .system-msg { color: #888; font-style: italic; font-size: 0.9em; margin: 5px 0; }
+        .user-message { margin: 5px 0; padding: 5px; border-radius: 3px; background-color: #e6f7ff; }
+        .user-name { font-weight: bold; color: #007bff; margin-right: 5px; }
+        .message-time { font-size: 0.8em; color: #aaa; float: right; }
+        #input-area { display: flex; }
+        #message-input { flex-grow: 1; padding: 10px; margin-right: 10px; border: 1px solid #ccc; border-radius: 4px; }
+        #send-button { padding: 10px 15px; background-color: #28a745; color: white; border: none; border-radius: 4px; cursor: pointer; }
+        #send-button:hover { background-color: #218838; }
+        #user-info { margin-bottom: 10px; padding: 10px; background-color: #ffeeba; border-radius: 4px; }
+    </style>
+</head>
+<body>
+
+    <div id="chat-container">
+        <h1>💬 Chat en Tiempo Real</h1>
+        
+        <p id="user-count">Usuarios conectados: 0</p> 
+
+        <div id="messages">
+            </div>
+
+        <div id="user-info">
+            <label for="username">Tu Nombre:</label>
+            <input type="text" id="username" value="Anónimo" placeholder="Escribe tu nombre">
+            <button onclick="setUserName()">Guardar</button>
+        </div>
+
+        <div id="input-area">
+            <input type="text" id="message-input" placeholder="Escribe un mensaje..." onkeyup="if(event.key === 'Enter') sendMessage()">
+            <button id="send-button" onclick="sendMessage()">Enviar</button>
+        </div>
+    </div>
+
+    <script src="https://cdn.socket.io/4.7.2/socket.io.min.js"></script>
+    <script>
+        const socket = io('http://localhost:3000');
+        const messagesDiv = document.getElementById('messages');
+        const messageInput = document.getElementById('message-input');
+        const usernameInput = document.getElementById('username');
+        let currentUsername = usernameInput.value;
+
+        function setUserName() {
+            currentUsername = usernameInput.value.trim() || 'Anónimo';
+            usernameInput.value = currentUsername; 
+            alert(`Nombre establecido a: ${currentUsername}`);
+            socket.emit('newUser', currentUsername);
+        }
+        
+        socket.on('connect', () => {
+            socket.emit('newUser', currentUsername); 
+        });
+
+        socket.on('history', (history) => {
+            messagesDiv.innerHTML = ''; 
+            history.forEach(appendMessage);
+            messagesDiv.scrollTop = messagesDiv.scrollHeight; 
+        });
+
+        socket.on('chatMessage', appendMessage);
+
+        socket.on('notification', (msg) => {
+            const p = document.createElement('p');
+            p.className = 'system-msg';
+            p.textContent = `[${msg.timestamp}] ${msg.text}`;
+            messagesDiv.appendChild(p);
+            messagesDiv.scrollTop = messagesDiv.scrollHeight;
+        });
+        
+        socket.on('usersConnected', (count) => {
+            document.getElementById('user-count').textContent = `Usuarios conectados: ${count}`;
+        });
+
+        function sendMessage() {
+            const msg = messageInput.value.trim();
+            if (msg) {
+                socket.emit('chatMessage', msg); 
+                messageInput.value = ''; 
+            }
+        }
+        
+        function appendMessage(message) {
+            const p = document.createElement('p');
+            p.className = 'user-message';
+            p.innerHTML = `<span class="user-name">${message.user}:</span> ${message.text} <span class="message-time">${message.timestamp}</span>`;
+            messagesDiv.appendChild(p);
+            messagesDiv.scrollTop = messagesDiv.scrollHeight;
+        }
+
+        setUserName(); 
+    </script>
+</body>
+</html>
