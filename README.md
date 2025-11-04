@@ -1,0 +1,50 @@
+# 💬 Chat en Tiempo Real con Socket.IO
+
+Este proyecto implementa una aplicación de chat simple en tiempo real para demostrar el uso de la librería **Socket.IO** y la comunicación bidireccional entre el cliente y el servidor.
+
+## Objetivo de la Práctica
+
+El objetivo principal fue comprender los fundamentos de los **requests en tiempo real** al establecer una conexión persistente (WebSockets) para el intercambio inmediato de datos, superando el modelo tradicional de petición/respuesta de HTTP.
+
+---
+## Requisitos e Instalación
+
+Para ejecutar este proyecto, necesitas tener **Node.js** y **npm** instalados.
+
+### 1. Instalación de Dependencias
+
+Desde la terminal en la carpeta principal del proyecto, instala las librerías necesarias:
+
+```bash
+npm install express socket.io
+
+2. Estructura de Archivos
+El proyecto sigue una estructura simple Cliente/Servidor:
+
+server.js: Lógica del Servidor (Node.js/Socket.IO) que maneja eventos y retransmite mensajes.
+
+public/index.html: Cliente (Frontend) que contiene la interfaz, CSS y el JavaScript para conectar Socket.IO.
+Uso de la Aplicación
+1. Iniciar el Servidor
+Ejecuta el archivo server.js desde la terminal:
+
+Bash
+
+node server.js
+Verás el mensaje de confirmación: 🚀 Servidor corriendo en puerto 3000.
+
+2. Acceder al Chat
+Abre tu navegador web y navega a la siguiente dirección:
+
+http://localhost:3000
+
+Importante: Abre al menos dos pestañas o ventanas en esta dirección y asigna nombres de usuario diferentes para probar el flujo de mensajes en tiempo real.
+
+✅ Funcionalidades Obligatorias 
+ImplementadasFuncionalidadCumplimientoMensajería en Tiempo Real Los mensajes se retransmiten a todos los clientes conectados al instante.
+Notificación de UsuarioEl sistema notifica cuando un usuario se conecta y desconecta.
+Historial Básico El servidor guarda un historial reciente y lo envía al cliente al conectarse (history).
+
+Identificación de Usuario El nombre de usuario se pide al iniciar y se muestra junto a cada mensaje.
+
+Contador de Usuarios (Avanzado)Muestra el número exacto de usuarios conectados en la interfaz.
